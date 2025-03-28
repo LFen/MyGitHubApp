@@ -37,6 +37,7 @@ import coil.compose.AsyncImage
 import com.lifen.mygithubapp.data.GitHubRepoManager
 import com.lifen.mygithubapp.model.AuthState
 import com.lifen.mygithubapp.model.RepoItemState
+import com.lifen.mygithubapp.ui.view.ErrorState
 import com.lifen.mygithubapp.viewmodel.GitHubRepoViewModel
 import com.lifen.mygithubapp.viewmodel.GitHubRepoViewModelFactory
 
@@ -81,7 +82,7 @@ fun RepoDetailScreen(
             }
 
             uiState.error != null -> {
-                com.lifen.mygithubapp.ui.ErrorState(message = uiState.error ?: "Unknown Error!")
+                ErrorState(message = uiState.error ?: "Unknown Error!")
             }
 
             else -> {

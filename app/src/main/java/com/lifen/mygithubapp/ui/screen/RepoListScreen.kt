@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.rounded.AccountCircle
@@ -24,7 +23,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,8 +37,8 @@ import androidx.navigation.NavController
 import com.lifen.mygithubapp.R
 import com.lifen.mygithubapp.data.GitHubRepoManager
 import com.lifen.mygithubapp.model.AuthState
-import com.lifen.mygithubapp.ui.ErrorState
-import com.lifen.mygithubapp.ui.RepoList
+import com.lifen.mygithubapp.ui.view.ErrorState
+import com.lifen.mygithubapp.ui.view.RepoList
 import com.lifen.mygithubapp.viewmodel.GitHubRepoViewModel
 import com.lifen.mygithubapp.viewmodel.GitHubRepoViewModelFactory
 

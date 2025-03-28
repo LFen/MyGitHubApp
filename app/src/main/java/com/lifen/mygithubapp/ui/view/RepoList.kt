@@ -1,4 +1,4 @@
-package com.lifen.mygithubapp.ui
+package com.lifen.mygithubapp.ui.view
 
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items

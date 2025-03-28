@@ -1,4 +1,4 @@
-package com.lifen.mygithubapp.ui
+package com.lifen.mygithubapp.ui.view
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
