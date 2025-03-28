@@ -17,3 +17,5 @@
 2. 使用Kotlin, API level 29+
 3. 使用Jetpack Compose UI，以及 Android Architect Component
 4. 用户认证信息持久化保存
+
+[ Oauth认证时序图 ]( https://github.com/LFen/MyGitHubApp/blob/main/oauth_sequence.png "GitHub Logo" )
