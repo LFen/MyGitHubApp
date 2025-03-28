@@ -28,6 +28,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,9 +58,13 @@ fun RepoListScreen(
     )
     val uiState by viewModel.uiState.collectAsState()
     var showMenu by remember { mutableStateOf(false) }
+    var hasRequested by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(authState) {
-        viewModel.searchRepositories(authState, "stars:>1000")
+        if (!hasRequested) {
+            hasRequested = true
+            viewModel.searchRepositories(authState, "stars:>1000")
+        }
     }
 
     Column(modifier = Modifier.fillMaxWidth()) {

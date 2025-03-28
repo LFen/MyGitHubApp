@@ -24,6 +24,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -51,9 +54,13 @@ fun RepoDetailScreen(
         )
     )
     val uiState by viewModel.ownerRepoUiState.collectAsState()
+    var hasRequested by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(authState) {
-        viewModel.getRepoDetails(authState, owner ?: "", repo ?: "")
+        if (!hasRequested) {
+            hasRequested = true
+            viewModel.getRepoDetails(authState, owner ?: "", repo ?: "")
+        }
     }
 
     Column(modifier = Modifier.fillMaxSize()) {

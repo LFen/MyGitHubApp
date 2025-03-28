@@ -15,6 +15,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -39,9 +42,13 @@ fun UserProfileScreen(
         )
     )
     val uiState by viewModel.uiState.collectAsState()
+    var hasRequested by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(authState) {
-        viewModel.getUserRepositories(authState)
+        if (!hasRequested) {
+            hasRequested = true
+            viewModel.getUserRepositories(authState)
+        }
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
