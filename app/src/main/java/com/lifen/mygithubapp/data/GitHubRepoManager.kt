@@ -27,9 +27,9 @@ class GitHubRepoManager {
     }
 
     // 搜索仓库
-    suspend fun searchRepositories(token: String?, query: String): ApiResult<GithubRepoResponse> {
+    suspend fun searchRepositories(token: String?, query: String, page: Int): ApiResult<GithubRepoResponse> {
         return try {
-            val response = apiService.searchRepositories(token, query)
+            val response = apiService.searchRepositories(token, query, page = page)
             ApiResult.Success(response)
         } catch (e: HttpException) {
             ApiResult.Error(ApiError.fromException(e))

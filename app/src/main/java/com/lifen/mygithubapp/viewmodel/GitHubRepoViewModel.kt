@@ -19,17 +19,24 @@ class GitHubRepoViewModel(private val repoManager: GitHubRepoManager) : ViewMode
 
     private val _uiState = MutableStateFlow(RepoUiState())
     val uiState: StateFlow<RepoUiState> = _uiState.asStateFlow()
+    var page = 1
 
     private val _ownerRepoUiState = MutableStateFlow(OwnerRepoUiState())
     val ownerRepoUiState: StateFlow<OwnerRepoUiState> = _ownerRepoUiState.asStateFlow()
 
+    fun resetPage() {
+        page = 1
+        _uiState.value = _uiState.value.copy(repos = emptyList())
+    }
+
     fun searchRepositories(authState: AuthState, query: String) {
         _uiState.value = _uiState.value.copy(isLoading = true)
         viewModelScope.launch {
-            when (val response = repoManager.searchRepositories(getToken(authState), query)) {
+            when (val response = repoManager.searchRepositories(getToken(authState), query, page)) {
                 is ApiResult.Success -> {
+                    page++
                     _uiState.value = _uiState.value.copy(
-                        repos = response.data.items.map { it.toItemState() },
+                        repos = _uiState.value.repos + response.data.items.map { it.toItemState() },
                         isLoading = false,
                         error = null
                     )

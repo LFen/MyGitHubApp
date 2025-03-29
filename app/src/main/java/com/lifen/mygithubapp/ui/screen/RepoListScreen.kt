@@ -1,5 +1,6 @@
 package com.lifen.mygithubapp.ui.screen
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,7 +14,6 @@ import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -28,8 +28,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -37,7 +37,6 @@ import androidx.navigation.NavController
 import com.lifen.mygithubapp.R
 import com.lifen.mygithubapp.data.GitHubRepoManager
 import com.lifen.mygithubapp.model.AuthState
-import com.lifen.mygithubapp.ui.view.ErrorState
 import com.lifen.mygithubapp.ui.view.RepoList
 import com.lifen.mygithubapp.viewmodel.GitHubRepoViewModel
 import com.lifen.mygithubapp.viewmodel.GitHubRepoViewModelFactory
@@ -112,26 +111,21 @@ fun RepoListScreen(
             }
         }
 
-        when {
-            uiState.isLoading -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-            }
-
-            uiState.error != null -> {
-                ErrorState(message = uiState.error ?: "Unknown Error!")
-            }
-
-            else -> {
-                RepoList(
-                    repositories = uiState.repos,
-                    modifier = Modifier.fillMaxSize(),
-                    onItemClick = { item ->
-                        naviController.navigate("repoDetail/${item.owner.login}/${item.name}")
-                    }
-                )
-            }
+        if (uiState.isLoading) {
+            Toast.makeText(LocalContext.current, "Loading...", Toast.LENGTH_SHORT).show()
+        } else if (uiState.error != null) {
+            Toast.makeText(LocalContext.current, "Error", Toast.LENGTH_SHORT).show()
         }
+
+        RepoList(
+            repositories = uiState.repos,
+            modifier = Modifier.fillMaxSize(),
+            onItemClick = { item ->
+                naviController.navigate("repoDetail/${item.owner.login}/${item.name}")
+            },
+            onLoadMore = {
+                viewModel.searchRepositories(authState, "stars:>1000")
+            }
+        )
     }
 }
