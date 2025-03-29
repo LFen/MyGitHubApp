@@ -10,6 +10,7 @@ import com.lifen.mygithubapp.model.ApiResult
 import com.lifen.mygithubapp.model.AuthState
 import com.lifen.mygithubapp.model.Extensions.getApiErrorMsg
 import com.lifen.mygithubapp.model.Extensions.toItemState
+import com.lifen.mygithubapp.model.IssueUiState
 import com.lifen.mygithubapp.model.OwnerRepoUiState
 import com.lifen.mygithubapp.model.RepoUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,8 +27,8 @@ class GitHubRepoViewModel(private val repoManager: GitHubRepoManager) : ViewMode
     private val _ownerRepoUiState = MutableStateFlow(OwnerRepoUiState())
     val ownerRepoUiState: StateFlow<OwnerRepoUiState> = _ownerRepoUiState.asStateFlow()
 
-    private val _createIssueState = MutableLiveData(false)
-    val createIssueState = _createIssueState as LiveData<Boolean>
+    private val _createIssueState = MutableLiveData(IssueUiState())
+    val createIssueState = _createIssueState as LiveData<IssueUiState>
 
     fun resetPage() {
         page = 1
@@ -35,7 +36,7 @@ class GitHubRepoViewModel(private val repoManager: GitHubRepoManager) : ViewMode
     }
 
     fun resetCreateIssueState() {
-        _createIssueState.value = false
+        _createIssueState.value = _createIssueState.value?.copy(isSuccess = false, error = null) ?: IssueUiState()
     }
 
     fun searchRepositories(authState: AuthState, query: String) {
@@ -110,10 +111,10 @@ class GitHubRepoViewModel(private val repoManager: GitHubRepoManager) : ViewMode
             val response = repoManager.createIssue(getToken(authState), owner, repo, title)
             when (response) {
                 is ApiResult.Success -> {
-                    _createIssueState.value = true
+                    _createIssueState.value = IssueUiState(true)
                 }
                 is ApiResult.Error -> {
-
+                    _createIssueState.value = IssueUiState(false, response.error.getApiErrorMsg())
                 }
             }
         }

@@ -45,6 +45,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.lifen.mygithubapp.data.GitHubRepoManager
 import com.lifen.mygithubapp.model.AuthState
+import com.lifen.mygithubapp.model.IssueUiState
 import com.lifen.mygithubapp.model.RepoItemState
 import com.lifen.mygithubapp.ui.view.ErrorState
 import com.lifen.mygithubapp.viewmodel.GitHubRepoViewModel
@@ -132,8 +133,11 @@ fun RepoDetailScreen(
         }
     }
 
-    if (authState.isLoggedIn && createIssueState.value) {
+    if (authState.isLoggedIn && (createIssueState.value as IssueUiState).isSuccess) {
         Toast.makeText(LocalContext.current, "提交成功", Toast.LENGTH_SHORT).show()
+        viewModel.resetCreateIssueState()
+    } else if (authState.isLoggedIn && (createIssueState.value as IssueUiState).error != null) {
+        Toast.makeText(LocalContext.current, (createIssueState.value as IssueUiState).error, Toast.LENGTH_SHORT).show()
         viewModel.resetCreateIssueState()
     }
 }
