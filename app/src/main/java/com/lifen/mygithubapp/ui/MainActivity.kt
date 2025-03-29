@@ -74,6 +74,7 @@ fun AppNavi(gitHubAuthManager: GitHubAuthManager) {
         }
         composable("webview") { backStackEntry ->
             WebViewScreen(
+                authState = authState,
                 gitHubAuthManager = gitHubAuthManager,
                 navController = naviController
             )

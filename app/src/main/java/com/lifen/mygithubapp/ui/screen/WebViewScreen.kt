@@ -26,6 +26,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.lifen.mygithubapp.auth.GitHubAuthManager
+import com.lifen.mygithubapp.model.AuthState
 import com.lifen.mygithubapp.network.OAuthConfig
 import com.lifen.mygithubapp.viewmodel.GitHubAuthViewModel
 import com.lifen.mygithubapp.viewmodel.GitHubAuthViewModelFactory
@@ -33,6 +34,7 @@ import com.lifen.mygithubapp.viewmodel.GitHubAuthViewModelFactory
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WebViewScreen(
+    authState: AuthState,
     gitHubAuthManager: GitHubAuthManager,
     navController: NavController
 ) {
@@ -46,6 +48,10 @@ fun WebViewScreen(
             gitHubAuthManager
         )
     )
+
+    if (authState.isLoggedIn) {
+        navController.popBackStack()
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
@@ -73,7 +79,6 @@ fun WebViewScreen(
                                     val code = Uri.parse(url).getQueryParameter("code")
                                     code?.let {
                                         authViewModel.handleOauthCallback(code)
-                                        navController.popBackStack()
                                     }
                                     return true
                                 }
