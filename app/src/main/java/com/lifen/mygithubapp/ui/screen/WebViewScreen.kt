@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.lifen.mygithubapp.auth.AuthManager
+import com.lifen.mygithubapp.auth.GitHubAuthManager
 import com.lifen.mygithubapp.network.OAuthConfig
 import com.lifen.mygithubapp.viewmodel.GitHubAuthViewModel
 import com.lifen.mygithubapp.viewmodel.GitHubAuthViewModelFactory
@@ -33,7 +33,7 @@ import com.lifen.mygithubapp.viewmodel.GitHubAuthViewModelFactory
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WebViewScreen(
-    authManager: AuthManager,
+    gitHubAuthManager: GitHubAuthManager,
     navController: NavController
 ) {
     val url = OAuthConfig.AUTH_URL + "?client_id=" + OAuthConfig.CLIENT_ID +
@@ -43,7 +43,7 @@ fun WebViewScreen(
 
     val authViewModel: GitHubAuthViewModel = viewModel(
         factory = GitHubAuthViewModelFactory(
-            authManager
+            gitHubAuthManager
         )
     )
 

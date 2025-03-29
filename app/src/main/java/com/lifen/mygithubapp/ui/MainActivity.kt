@@ -11,7 +11,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.lifen.mygithubapp.auth.AuthManager
+import com.lifen.mygithubapp.auth.GitHubAuthManager
 import com.lifen.mygithubapp.model.AuthState
 import com.lifen.mygithubapp.ui.screen.RepoDetailScreen
 import com.lifen.mygithubapp.ui.screen.RepoListScreen
@@ -23,31 +23,31 @@ import com.lifen.mygithubapp.viewmodel.GitHubAuthViewModel
 import com.lifen.mygithubapp.viewmodel.GitHubAuthViewModelFactory
 
 class MainActivity : ComponentActivity() {
-    private lateinit var authManager: AuthManager
+    private lateinit var gitHubAuthManager: GitHubAuthManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        authManager = AuthManager(this)
+        gitHubAuthManager = GitHubAuthManager(this)
 
         setContent {
             MyGithubAppTheme {
-                AppNavi(authManager)
+                AppNavi(gitHubAuthManager)
             }
         }
     }
 }
 
 @Composable
-fun AppNavi(authManager: AuthManager) {
+fun AppNavi(gitHubAuthManager: GitHubAuthManager) {
     val naviController = rememberNavController()
-    val authState by authManager.authStatus.collectAsState(initial = AuthState(isLoggedIn = false))
+    val authState by gitHubAuthManager.authStatus.collectAsState(initial = AuthState(isLoggedIn = false))
     NavHost(navController = naviController, startDestination = "repo_list_screen") {
         composable("repo_list_screen") {
             val authViewModel: GitHubAuthViewModel = viewModel(
                 factory = GitHubAuthViewModelFactory(
-                    authManager
+                    gitHubAuthManager
                 )
             )
             RepoListScreen(
@@ -74,7 +74,7 @@ fun AppNavi(authManager: AuthManager) {
         }
         composable("webview") { backStackEntry ->
             WebViewScreen(
-                authManager = authManager,
+                gitHubAuthManager = gitHubAuthManager,
                 navController = naviController
             )
         }

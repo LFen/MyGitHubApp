@@ -2,7 +2,7 @@ package com.lifen.mygithubapp.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lifen.mygithubapp.auth.AuthManager
+import com.lifen.mygithubapp.auth.GitHubAuthManager
 import com.lifen.mygithubapp.model.AuthState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import androidx.lifecycle.ViewModelProvider
 
-class GitHubAuthViewModel(private val authManager: AuthManager) : ViewModel() {
+class GitHubAuthViewModel(private val gitHubAuthManager: GitHubAuthManager) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState = _uiState as StateFlow<LoginUiState>
@@ -21,7 +21,7 @@ class GitHubAuthViewModel(private val authManager: AuthManager) : ViewModel() {
         viewModelScope.launch {
             try {
                 // 发起网络请求获取访问令牌
-                authManager.fetchAccessToken(code)
+                gitHubAuthManager.fetchAccessToken(code)
                 _uiState.value = _uiState.value.copy(isLoading = false, authState = AuthState(true))
             } catch (e: Exception) {
                 _uiState.value =
@@ -34,7 +34,7 @@ class GitHubAuthViewModel(private val authManager: AuthManager) : ViewModel() {
     fun logout() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                authManager.logout()
+                gitHubAuthManager.logout()
             }
             _uiState.value = _uiState.value.copy(isLoading = false, authState = AuthState(false))
         }
@@ -48,9 +48,9 @@ data class LoginUiState(
 )
 
 class GitHubAuthViewModelFactory(
-    private val authManager: AuthManager
+    private val gitHubAuthManager: GitHubAuthManager
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return GitHubAuthViewModel(authManager) as T
+        return GitHubAuthViewModel(gitHubAuthManager) as T
     }
 }

@@ -4,7 +4,7 @@ import android.content.Context
 import com.lifen.mygithubapp.network.RetrofitClient
 import com.lifen.mygithubapp.network.api.OauthApiService
 
-class AuthManager(private val context: Context) {
+class GitHubAuthManager(private val context: Context) {
 
     private val oauthApiService: OauthApiService by lazy {
         RetrofitClient.oauthApiService
