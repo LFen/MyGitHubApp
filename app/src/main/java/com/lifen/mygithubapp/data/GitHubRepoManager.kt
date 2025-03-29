@@ -5,6 +5,7 @@ import com.lifen.mygithubapp.model.ApiResult
 import com.lifen.mygithubapp.model.GitHubRepo
 import com.lifen.mygithubapp.network.RetrofitClient
 import com.lifen.mygithubapp.network.api.ApiService
+import com.lifen.mygithubapp.network.response.CreateIssueResponse
 import com.lifen.mygithubapp.network.response.GithubRepoResponse
 import retrofit2.HttpException
 
@@ -54,6 +55,17 @@ class GitHubRepoManager {
     suspend fun getRepoDetails(token: String?, owner: String, repo: String): ApiResult<GitHubRepo> {
         return try {
             val response = apiService.getRepoDetail(token, owner, repo)
+            ApiResult.Success(response)
+        } catch (e: HttpException) {
+            ApiResult.Error(ApiError.fromException(e))
+        } catch (e: Exception) {
+            ApiResult.Error(ApiError.NetworkError)
+        }
+    }
+
+    suspend fun createIssue(token: String?, owner: String, repo: String, title: String): ApiResult<CreateIssueResponse> {
+        return try {
+            val response = apiService.createIssue(token, owner, repo, mapOf("title" to title))
             ApiResult.Success(response)
         } catch (e: HttpException) {
             ApiResult.Error(ApiError.fromException(e))

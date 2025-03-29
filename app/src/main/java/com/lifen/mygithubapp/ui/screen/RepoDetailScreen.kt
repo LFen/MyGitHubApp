@@ -1,5 +1,6 @@
 package com.lifen.mygithubapp.ui.screen
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,8 +11,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,17 +23,22 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -47,8 +56,9 @@ fun RepoDetailScreen(
     naviController: NavController,
     authState: AuthState,
     owner: String?,
-    repo: String?
+    repoName: String?,
 ) {
+    var issueTitle by rememberSaveable { mutableStateOf("") }
     val viewModel: GitHubRepoViewModel = viewModel(
         factory = GitHubRepoViewModelFactory(
             GitHubRepoManager()
@@ -57,12 +67,16 @@ fun RepoDetailScreen(
     val uiState by viewModel.ownerRepoUiState.collectAsState()
     var hasRequested by rememberSaveable { mutableStateOf(false) }
 
+    val focusManager = LocalFocusManager.current
+
     LaunchedEffect(authState) {
         if (!hasRequested) {
             hasRequested = true
-            viewModel.getRepoDetails(authState, owner ?: "", repo ?: "")
+            viewModel.getRepoDetails(authState, owner ?: "", repoName ?: "")
         }
     }
+
+    val createIssueState = viewModel.createIssueState.observeAsState(false)
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
@@ -88,9 +102,39 @@ fun RepoDetailScreen(
             else -> {
                 uiState.repo?.let { repo ->
                     RepositoryItem(repo = repo)
+
+                    if (authState.isLoggedIn) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            TextField(
+                                value = issueTitle,
+                                onValueChange = { issueTitle = it },
+                                placeholder = { Text("请输入issue标题") },
+                                keyboardOptions = KeyboardOptions(
+                                    imeAction = ImeAction.Done
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onDone = {
+                                        focusManager.clearFocus()
+                                        viewModel.createIssue(authState, owner?: "", repoName ?: "", issueTitle)
+                                    }
+                                )
+                            )
+                            Button(onClick = {
+                                focusManager.clearFocus()
+                                viewModel.createIssue(authState, owner?: "", repoName ?: "", issueTitle)
+                            }, enabled = issueTitle.isNotBlank()) {
+                                Text("提交issue")
+                            }
+                        }
+                    }
                 }
             }
         }
+    }
+
+    if (authState.isLoggedIn && createIssueState.value) {
+        Toast.makeText(LocalContext.current, "提交成功", Toast.LENGTH_SHORT).show()
+        viewModel.resetCreateIssueState()
     }
 }
 

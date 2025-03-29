@@ -69,7 +69,7 @@ fun AppNavi(gitHubAuthManager: GitHubAuthManager) {
                 naviController = naviController,
                 authState = authState,
                 owner = owner,
-                repo = repo
+                repoName = repo,
             )
         }
         composable("webview") { backStackEntry ->

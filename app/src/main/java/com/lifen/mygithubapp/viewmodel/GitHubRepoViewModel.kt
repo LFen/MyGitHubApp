@@ -1,5 +1,7 @@
 package com.lifen.mygithubapp.viewmodel
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -24,9 +26,16 @@ class GitHubRepoViewModel(private val repoManager: GitHubRepoManager) : ViewMode
     private val _ownerRepoUiState = MutableStateFlow(OwnerRepoUiState())
     val ownerRepoUiState: StateFlow<OwnerRepoUiState> = _ownerRepoUiState.asStateFlow()
 
+    private val _createIssueState = MutableLiveData(false)
+    val createIssueState = _createIssueState as LiveData<Boolean>
+
     fun resetPage() {
         page = 1
         _uiState.value = _uiState.value.copy(repos = emptyList())
+    }
+
+    fun resetCreateIssueState() {
+        _createIssueState.value = false
     }
 
     fun searchRepositories(authState: AuthState, query: String) {
@@ -91,6 +100,20 @@ class GitHubRepoViewModel(private val repoManager: GitHubRepoManager) : ViewMode
                         isLoading = false,
                         error = response.error.getApiErrorMsg()
                     )
+                }
+            }
+        }
+    }
+
+    fun createIssue(authState: AuthState, owner: String, repo: String, title: String) {
+        viewModelScope.launch {
+            val response = repoManager.createIssue(getToken(authState), owner, repo, title)
+            when (response) {
+                is ApiResult.Success -> {
+                    _createIssueState.value = true
+                }
+                is ApiResult.Error -> {
+
                 }
             }
         }
