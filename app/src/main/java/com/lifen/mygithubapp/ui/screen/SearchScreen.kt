@@ -32,7 +32,9 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -65,6 +67,15 @@ fun SearchScreen(
         keyboardController?.show()
     }
 
+    var textFieldValue by remember {
+        mutableStateOf(
+            TextFieldValue(
+                text = searchQuery,
+                selection = TextRange(searchQuery.length)
+            )
+        )
+    }
+
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text("Search Repos by Language") },
@@ -76,8 +87,11 @@ fun SearchScreen(
         )
 
         OutlinedTextField(
-            value = searchQuery,
-            onValueChange = { searchQuery = it },
+            value = textFieldValue,
+            onValueChange = {
+                textFieldValue = it
+                searchQuery = textFieldValue.text
+            },
             placeholder = { Text("Input language") },  // 提示文字
             singleLine = true,
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
